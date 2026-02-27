@@ -1,9 +1,9 @@
-import { DeckCards } from './deckCard';
+import { DeckCard } from './deckCard';
 
 export interface Deck {
     id: number;
     userId: number
     name: string;
-    cards: DeckCards[];
+    cards: DeckCard[];
     progess: number
 }
