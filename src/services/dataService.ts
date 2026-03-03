@@ -31,7 +31,7 @@ export class DataService {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           userId INTEGER NOT NULL,
           name TEXT NOT NULL,
-          progress NUMBER,
+          progress NUMBER DEFAULT 0,
           FOREIGN KEY (userId) REFERENCES Users(id)
         )`);
 
@@ -79,7 +79,7 @@ export class DataService {
 
   checkUsername(username: string, callback: Function): void {
     this._db!.get('SELECT 1 FROM Users WHERE name = ?', [username], (err: Error, user: User) => {
-      if (err) callback(err, null);
+      if (err) return callback(err, null);
 
       const isExisting = !!user;
       callback(null, isExisting);
@@ -89,6 +89,12 @@ export class DataService {
   getAllDecks(callback: Function): void {
     this._db!.all('SELECT * FROM Decks', (err: Error, decks: Deck[]) => {
       callback(err, decks.sort((a, b) => a.name.localeCompare(b.name)));
+    });
+  }
+
+  getDeckById(id: number, callback: Function): void {
+    this._db!.get('SELECT * FROM Decks WHERE id = ?', [id], (err: Error, deck: Deck) => {
+      callback(err, deck);
     });
   }
 
@@ -103,6 +109,7 @@ export class DataService {
     cards.forEach(card => {
       this._db!.run('INSERT INTO Decks (front, back) VALUES (?, ?)',
         [
+          deckId,
           card.front,
           card.back
         ]
@@ -117,7 +124,7 @@ export class DataService {
 
   updateProgress(id: number, progess: number) {
     this._db!.run(
-      'UPDATE Decks SET title = ? WHERE id = ?',
+      'UPDATE Decks SET progress = ? WHERE id = ?',
       [
         progess,
         id

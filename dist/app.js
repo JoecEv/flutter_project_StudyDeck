@@ -1,54 +1,47 @@
-import { Router, Request, Response } from 'express';
-import { DataService } from './services/dataService';
-import { Deck } from './models/deck';
-
-const dataService = new DataService();
-const router = Router();
-
-router.get('/user/check-username', (req: Request, res: Response) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const dataService_1 = require("./services/dataService");
+const dataService = new dataService_1.DataService();
+const router = (0, express_1.Router)();
+router.get('/user/check-username', (req, res) => {
     if (!req.query.username) {
         return res.status(404).send({ error: 'Es wurde kein Benutzername eingegeben' });
     }
-
-    dataService.checkUsername(req.query.username.toString(), (err: Error, isExisting: boolean) => {
+    dataService.checkUsername(req.query.username.toString(), (err, isExisting) => {
         if (err) {
             return res.status(500).send({ error: 'Datenbankfehler' });
         }
         return res.status(200).send({ isExisting });
     });
 });
-
-router.get('/decks', (req: Request, res: Response) => {
-    dataService.getAllDecks(function (err: Error, decks: Deck[]) {
+router.get('/decks', (req, res) => {
+    dataService.getAllDecks(function (err, decks) {
         if (!decks) {
             return res.status(404).send({ error: 'Es wurde keine Decks gefunden' });
         }
         return res.send(decks);
     });
 });
-
-router.get('/decks{/:id}', (req: Request, res: Response) => {
+router.get('/decks{/:id}', (req, res) => {
     if (!req.params.id) {
         return res.status(404).send({ error: 'Keine Id mitgegeben' });
     }
-
-    dataService.getDeckById(+req.params.id, function (err: Error, deck: Deck) {
+    dataService.getDeckById(+req.params.id, function (err, deck) {
         if (!deck) {
             return res.status(404).send({ error: 'Es wurde kein Deck gefunden' });
         }
         return res.send(deck);
     });
 });
-
-router.post('/decks', (req: Request, res: Response) => {
+router.post('/decks', (req, res) => {
     if (!req.body.name) {
         return res.status(404).send({ error: 'Kein Deckname mitgegeben' });
     }
     dataService.addDeck(req.body.name);
     return res.status(200).send({ message: 'Deck hinzugefugt' });
 });
-
-router.post('/decks/:id/cards', (req: Request, res: Response) => {
+router.post('/decks/:id/cards', (req, res) => {
     if (!req.params.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
@@ -58,26 +51,21 @@ router.post('/decks/:id/cards', (req: Request, res: Response) => {
     dataService.addCards(req.body.cards, +req.params.id);
     return res.status(200).send({ message: 'Cards hinzugefügt' });
 });
-
-router.delete('/decks', (req: Request, res: Response) => {
+router.delete('/decks', (req, res) => {
     if (!req.query.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
-    dataService.deleteDeck(+req.query.id!);
+    dataService.deleteDeck(+req.query.id);
     return res.status(200).send({ message: 'Deck gelöscht' });
 });
-
-router.put('/decks', (req: Request, res: Response) => {
+router.put('/decks', (req, res) => {
     if (!req.query.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
-
     if (req.body.progress === undefined || req.body.progress === null) {
         return res.status(404).send({ error: 'Keine Progress mitgegeben' });
     }
-
-    dataService.updateProgress(+req.query.id!, req.body.progress);
+    dataService.updateProgress(+req.query.id, req.body.progress);
     return res.status(200).send({ message: 'Progress geupdatet' });
 });
-
-export default router;
+exports.default = router;
