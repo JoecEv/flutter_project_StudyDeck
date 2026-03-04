@@ -8,8 +8,8 @@ export class DataService {
   private _db: Database | null = null;
 
   constructor() {
+    this._db = new sqlite3.Database('studyDeck.sqlite');
     if (!fs.existsSync('studyDeck.sqlite')) {
-      this._db = new sqlite3.Database('studyDeck.sqlite');
       this._db!.serialize(() => this.initData());
     }
 

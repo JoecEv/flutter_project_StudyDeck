@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { DataService } from './services/dataService';
-import { Deck } from './models/deck';
+import { DataService } from '../services/dataService';
+import { Deck } from '../models/deck';
 
 const dataService = new DataService();
 const router = Router();
