@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:study_deck/pages/home.dart';
+import 'package:study_deck/pages/login.dart';
+import 'package:study_deck/provider/deck_provider.dart';
 
 void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => DeckProvider(),
+      builder: (context, child) => MaterialApp(
+        home: Scaffold(
+          body: MaterialApp.router(title: 'Study Deck', routerConfig: _router),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
+
+final GoRouter _router = GoRouter(
+  initialLocation: '/login',
+  routes: [
+    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+    GoRoute(path: '/home', builder: (context, state) => const DeckOverview()),
+  ],
+);

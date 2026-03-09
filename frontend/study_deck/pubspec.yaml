@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  go_router: ^17.1.0
+  http: ^1.6.0
+  localstorage: ^6.0.0
+  provider: ^6.1.5+1
+  shared_preferences: ^2.5.4
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +22,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/dummy_logo.png
+    - assets/studydeck_logo.png

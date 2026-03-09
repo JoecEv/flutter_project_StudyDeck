@@ -80,9 +80,20 @@ export class DataService {
   checkUsername(username: string, callback: Function): void {
     this._db!.get('SELECT 1 FROM Users WHERE name = ?', [username], (err: Error, user: User) => {
       if (err) return callback(err, null);
+      let isExisting;
 
-      const isExisting = !!user;
-      callback(null, isExisting);
+      if (!!user) {
+        isExisting = true;
+        callback(null, isExisting);
+      } else {
+        this._db!.run(
+          'INSERT INTO Users (name) VALUES (?)',
+          [username]
+        );
+        isExisting = false
+        callback(null, isExisting);
+      }
+
     });
   }
 

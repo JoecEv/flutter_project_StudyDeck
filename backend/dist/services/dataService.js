@@ -9,8 +9,8 @@ const fs_1 = __importDefault(require("fs"));
 class DataService {
     constructor() {
         this._db = null;
+        this._db = new sqlite3_1.default.Database('studyDeck.sqlite');
         if (!fs_1.default.existsSync('studyDeck.sqlite')) {
-            this._db = new sqlite3_1.default.Database('studyDeck.sqlite');
             this._db.serialize(() => this.initData());
         }
     }
@@ -70,8 +70,16 @@ class DataService {
         this._db.get('SELECT 1 FROM Users WHERE name = ?', [username], (err, user) => {
             if (err)
                 return callback(err, null);
-            const isExisting = !!user;
-            callback(null, isExisting);
+            let isExisting;
+            if (!!user) {
+                isExisting = true;
+                callback(null, isExisting);
+            }
+            else {
+                this._db.run('INSERT INTO Users (name) VALUES (?)', [username]);
+                isExisting = false;
+                callback(null, isExisting);
+            }
         });
     }
     getAllDecks(callback) {
