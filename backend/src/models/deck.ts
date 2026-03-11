@@ -5,5 +5,5 @@ export interface Deck {
     userId: number;
     name: string;
     cards: DeckCard[];
-    progess: number;
+    progress: number;
 }

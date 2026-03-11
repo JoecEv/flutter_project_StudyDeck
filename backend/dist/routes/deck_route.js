@@ -41,7 +41,7 @@ router.post('/decks', (req, res) => {
     dataService.addDeck(req.body.name);
     return res.status(200).send({ message: 'Deck hinzugefugt' });
 });
-router.post('/decks/:id/cards', (req, res) => {
+router.post('/decks{/:id}/cards', (req, res) => {
     if (!req.params.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
@@ -51,21 +51,21 @@ router.post('/decks/:id/cards', (req, res) => {
     dataService.addCards(req.body.cards, +req.params.id);
     return res.status(200).send({ message: 'Cards hinzugefügt' });
 });
-router.delete('/decks', (req, res) => {
-    if (!req.query.id) {
+router.delete('/decks{/:id}', (req, res) => {
+    if (!req.params.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
-    dataService.deleteDeck(+req.query.id);
+    dataService.deleteDeck(+req.params.id);
     return res.status(200).send({ message: 'Deck gelöscht' });
 });
-router.put('/decks', (req, res) => {
-    if (!req.query.id) {
+router.put('/decks{/:id}', (req, res) => {
+    if (!req.params.id) {
         return res.status(404).send({ error: 'Kein Id mitgegeben' });
     }
     if (req.body.progress === undefined || req.body.progress === null) {
         return res.status(404).send({ error: 'Keine Progress mitgegeben' });
     }
-    dataService.updateProgress(+req.query.id, req.body.progress);
+    dataService.updateProgress(+req.params.id, req.body.progress);
     return res.status(200).send({ message: 'Progress geupdatet' });
 });
 exports.default = router;

@@ -8,11 +8,12 @@ export class DataService {
   private _db: Database | null = null;
 
   constructor() {
-    this._db = new sqlite3.Database('studyDeck.sqlite');
-    if (!fs.existsSync('studyDeck.sqlite')) {
-      this._db!.serialize(() => this.initData());
+    if (fs.existsSync('studyDeck.sqlite')) {
+      fs.unlinkSync('studyDeck.sqlite');
     }
 
+    this._db = new sqlite3.Database('studyDeck.sqlite');
+    this._db!.serialize(() => this.initData());
   }
 
   private initData() {
@@ -104,9 +105,37 @@ export class DataService {
   }
 
   getDeckById(id: number, callback: Function): void {
-    this._db!.get('SELECT * FROM Decks WHERE id = ?', [id], (err: Error, deck: Deck) => {
-      callback(err, deck);
-    });
+    this._db!.all(
+      `SELECT deck.id, deck.name, deck.userId, deck.progress
+              card.id, cards.deckId, card.front, card.back
+       FROM Decks deck
+       LEFT JOIN Cards card ON card.deckId = deck.id
+       WHERE deck.id = ?`,
+      [id],
+      (rows: any[]) => {
+
+        const deck: Deck = {
+          id: rows[0].deckId,
+          userId: rows[0].userId,
+          progress: rows[0].progress,
+          name: rows[0].deckName,
+          cards: []
+        };
+
+        rows.forEach(r => {
+          if (r.cardId) {
+            deck.cards.push({
+              id: r.cardId,
+              deckId: r.deckId,
+              front: r.front,
+              back: r.back
+            });
+          }
+        });
+
+        callback(null, deck);
+      }
+    );
   }
 
   addDeck(name: string) {

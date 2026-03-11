@@ -26,3 +26,4 @@ flutter:
   assets:
     - assets/dummy_logo.png
     - assets/studydeck_logo.png
+    - assets/studydeck_logo_light.png
