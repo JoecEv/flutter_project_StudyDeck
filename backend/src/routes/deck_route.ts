@@ -6,11 +6,11 @@ const dataService = new DataService();
 const router = Router();
 
 router.post('/user/check-username', (req: Request, res: Response) => {
-    if (!req.query.username) {
-        return res.status(404).send({ error: 'Es wurde kein Benutzername eingegeben' });
+    if (!req.body.username) {
+        return res.status(404);
     }
 
-    dataService.checkUsername(req.query.username.toString(), (err: Error, isExisting: boolean) => {
+    dataService.checkUsername(req.body.username.toString(), (err: Error, isExisting: boolean) => {
         if (err) {
             return res.status(500);
         }

@@ -7,6 +7,8 @@ import 'package:study_deck/pages/home.dart';
 import 'package:study_deck/pages/login.dart';
 import 'package:study_deck/pages/settings.dart';
 import 'package:study_deck/provider/deck_provider.dart';
+import 'package:study_deck/provider/theme_provider.dart';
+import 'package:study_deck/theme/app_theme.dart';
 
 late SharedPreferences prefs;
 
@@ -15,12 +17,17 @@ void main() async {
   prefs = await SharedPreferences.getInstance();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => DeckProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => DeckProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
       builder: (context, child) {
+        final themeProvider = context.watch<ThemeProvider>();
         return MaterialApp(
           home: Scaffold(
             body: MaterialApp.router(
+              theme: AppTheme.getTheme(themeProvider.themeMode),
               title: 'Study Deck',
               routerConfig: _router,
             ),
@@ -32,8 +39,7 @@ void main() async {
 }
 
 final GoRouter _router = GoRouter(
-  initialLocation:
-      '/home', //prefs.getString('username') != null ? '/home' : '/login',
+  initialLocation: prefs.getString('username') != null ? '/home' : '/login',
   routes: [
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
     GoRoute(

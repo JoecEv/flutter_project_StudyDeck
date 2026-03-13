@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:study_deck/provider/theme_provider.dart';
+import 'package:study_deck/theme/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,10 +27,9 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final response = await http.get(
-        Uri.parse(
-          'http://10.0.2.2:3000/user/check-username?username=$username',
-        ),
+      final response = await http.post(
+        Uri.parse('http://10.229.156.254:3000/user/check-username'),
+        body: jsonEncode({'username': username}),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -57,28 +59,32 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<ThemeProvider>().themeMode;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Color.fromARGB(255, 25, 43, 194),
-                Color.fromARGB(255, 21, 5, 120),
-              ],
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+        ),
+        flexibleSpace: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(14),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: AppTheme.getAppBarGradient(themeMode),
             ),
           ),
         ),
         leading: Padding(
           padding: EdgeInsets.all(8),
-          child: Image.asset('assets/studydeck_logo.png'),
+          child: Image.asset('assets/studydeck_logo_light.png'),
         ),
-        title: Text(
+        title: const Text(
           "StudyDeck",
-          style: TextStyle(fontSize: 14, color: Color(0xffffffff)),
+          style: TextStyle(fontSize: 14, color: Colors.white),
         ),
       ),
       body: Center(
@@ -93,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
-                  color: Color(0xff000000),
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ),
@@ -101,7 +107,12 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 80),
               child: Image(
-                image: AssetImage("assets/studydeck_logo.png"),
+                image: AssetImage(
+                  (themeMode == MyThemeMode.dark ||
+                          themeMode == MyThemeMode.purple)
+                      ? "assets/studydeck_logo_light.png"
+                      : "assets/studydeck_logo.png",
+                ),
                 height: 150,
                 width: 150,
                 fit: BoxFit.cover,
@@ -109,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
 
             Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: SizedBox(
                 width: 300,
                 child: TextField(
@@ -120,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.normal,
                     fontSize: 14,
-                    color: Color(0xff000000),
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
                   decoration: InputDecoration(
                     hintText: "Unique Playername",
@@ -128,7 +139,16 @@ class _LoginPageState extends State<LoginPage> {
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.normal,
                       fontSize: 14,
-                      color: Color(0xff000000),
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: colorScheme.primary),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: colorScheme.primary,
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
@@ -137,12 +157,7 @@ class _LoginPageState extends State<LoginPage> {
 
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 25, 43, 194),
-                    Color.fromARGB(255, 21, 5, 120),
-                  ],
-                ),
+                gradient: AppTheme.getAppBarGradient(themeMode),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: MaterialButton(

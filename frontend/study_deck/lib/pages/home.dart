@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:study_deck/models/deck.dart';
 import 'package:study_deck/pages/study_view.dart';
-import 'deck_view_card.dart';
+import 'package:study_deck/provider/theme_provider.dart';
+import 'package:study_deck/theme/app_theme.dart';
+import 'widgets/deck_view_card.dart';
 
 class DeckOverview extends StatefulWidget {
   const DeckOverview({super.key});
@@ -35,7 +38,7 @@ class _DeckOverviewState extends State<DeckOverview> {
 
   Future<void> getDecks() async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:3000/decks'),
+      Uri.parse('http://10.229.156.254:3000/decks'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -53,7 +56,7 @@ class _DeckOverviewState extends State<DeckOverview> {
 
   Future<void> deleteDeck(Deck deck) async {
     await http.delete(
-      Uri.parse('http://10.0.2.2:3000/decks/${deck.id}'),
+      Uri.parse('http://10.229.156.254:3000/decks/${deck.id}'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -66,18 +69,20 @@ class _DeckOverviewState extends State<DeckOverview> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<ThemeProvider>().themeMode;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Color.fromARGB(255, 25, 43, 194),
-                Color.fromARGB(255, 21, 5, 120),
-              ],
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+        ),
+        flexibleSpace: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(14),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: AppTheme.getAppBarGradient(themeMode),
             ),
           ),
         ),
@@ -89,7 +94,7 @@ class _DeckOverviewState extends State<DeckOverview> {
           "Übersicht",
           style: TextStyle(
             fontSize: 20,
-            color: Color(0xffffffff),
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -121,14 +126,7 @@ class _DeckOverviewState extends State<DeckOverview> {
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color.fromARGB(255, 25, 43, 194),
-                Color.fromARGB(255, 21, 5, 120),
-              ],
-            ),
+            gradient: AppTheme.getAppBarGradient(themeMode),
           ),
           child: Icon(Icons.add, size: 28),
         ),
