@@ -18,6 +18,19 @@ router.post('/user/check-username', (req: Request, res: Response) => {
     });
 });
 
+router.get('/user/get-id', (req: Request, res: Response) => {
+    if (!req.query.username) {
+        return res.status(404).send({ error: 'Kein Benutzername mitgegeben' });
+    }
+    dataService.getUserId(req.query.username.toString(), function (err: Error, userId: number) {
+        if (!userId) {
+            return res.status(404).send({ error: 'Es wurde kein Benutzer gefunden' });
+        }
+        return res.send(userId);
+    });
+});
+
+
 router.get('/decks', (req: Request, res: Response) => {
     dataService.getAllDecks(function (err: Error, decks: Deck[]) {
         if (!decks) {
@@ -27,7 +40,19 @@ router.get('/decks', (req: Request, res: Response) => {
     });
 });
 
-router.get('/decks{/:id}', (req: Request, res: Response) => {
+router.get('/deck/get-id', (req: Request, res: Response) => {
+    if (!req.query.deckname) {
+        return res.status(404).send({ error: 'Kein Deckname mitgegeben' });
+    }
+    dataService.getDeckId(req.query.deckname.toString(), function (err: Error, deckId: number) {
+        if (deckId == null) {
+            return res.status(404).send({ error: 'Es wurde kein Deck gefunden' });
+        }
+        return res.send(deckId);
+    });
+});
+
+router.get('/decks', (req: Request, res: Response) => {
     if (!req.params.id) {
         return res.status(404).send({ error: 'Keine Id mitgegeben' });
     }
@@ -44,18 +69,15 @@ router.post('/decks', (req: Request, res: Response) => {
     if (!req.body.name) {
         return res.status(404).send({ error: 'Kein Deckname mitgegeben' });
     }
-    dataService.addDeck(req.body.name);
+    dataService.addDeck(req.body.name, +req.body.userId);
     return res.status(200).send({ message: 'Deck hinzugefugt' });
 });
 
-router.post('/decks{/:id}/cards', (req: Request, res: Response) => {
-    if (!req.params.id) {
-        return res.status(404).send({ error: 'Kein Id mitgegeben' });
+router.post('/cards', (req: Request, res: Response) => {
+    if (!req.body.cards) {
+        return res.status(404).send({ error: 'Die Karten fehlen' });
     }
-    if (!req.body.cards || !Array.isArray(req.body.cards)) {
-        return res.status(404).send({ error: 'Fehlende oder falsche Karten' });
-    }
-    dataService.addCards(req.body.cards, +req.params.id);
+    dataService.addCards(req.body.cards, +req.body.deckId);
     return res.status(200).send({ message: 'Cards hinzugefügt' });
 });
 

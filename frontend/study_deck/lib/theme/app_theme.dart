@@ -5,14 +5,19 @@ enum MyThemeMode { light, dark, purple }
 abstract class AppTheme {
   static ThemeData get lightMode => ThemeData(
     brightness: Brightness.light,
-    primaryColor: Color(0xFF192BC2),
     scaffoldBackgroundColor: Color(0xFFF8F8FF),
     colorScheme: ColorScheme.light(
       primary: Color(0xFF192BC2),
       secondary: Color(0xFF449DD1),
       surface: Color(0xFF78C0E0),
     ),
-    cardColor: Color(0xFFF8F8FF),
+    cardColor: Color(0xFFF5FFFF),
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: Colors.white),
+      bodySmall: TextStyle(color: Colors.black),
+      titleLarge: TextStyle(color: Colors.white),
+      titleSmall: TextStyle(color: Colors.black),
+    ),
   );
 
   static ThemeData get darkMode => ThemeData(
@@ -25,19 +30,15 @@ abstract class AppTheme {
     ),
     cardColor: Color(0xFF2A454B),
     textTheme: TextTheme(
+      bodyLarge: TextStyle(color: Colors.white),
       bodySmall: TextStyle(color: Colors.white),
+      titleLarge: TextStyle(color: Colors.white),
       titleSmall: TextStyle(color: Colors.white),
     ),
   );
 
   static ThemeData get purpleMode => ThemeData(
     brightness: Brightness.light,
-    textTheme: TextTheme(
-      bodyLarge: TextStyle(color: Colors.white),
-      bodySmall: TextStyle(color: Colors.black),
-      titleLarge: TextStyle(color: Colors.white),
-      titleSmall: TextStyle(color: Colors.black),
-    ),
     scaffoldBackgroundColor: Color.fromARGB(255, 250, 233, 252),
     colorScheme: ColorScheme.light(
       primary: Color(0xFF9D4EDD),
@@ -47,6 +48,13 @@ abstract class AppTheme {
       onSurface: Color(0xFFE0AAFF),
     ),
     cardColor: Color(0xFFF8F8FF),
+
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: Colors.white),
+      bodySmall: TextStyle(color: Colors.black),
+      titleLarge: TextStyle(color: Colors.white),
+      titleSmall: TextStyle(color: Colors.black),
+    ),
   );
 
   static ThemeData getTheme(MyThemeMode mode) {

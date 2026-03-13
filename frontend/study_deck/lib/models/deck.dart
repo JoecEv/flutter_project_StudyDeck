@@ -17,9 +17,9 @@ class Deck {
 
   factory Deck.fromJson(Map<String, dynamic> json) {
     return Deck(
-      id: json['id'] as int,
-      userId: json['userId'] as int,
-      name: json['name'] as String,
+      id: json['id'],
+      userId: json['userId'],
+      name: json['name'],
       deckCards:
           (json['deckCards'] as List<dynamic>?)
               ?.map((e) => DeckCard.fromJson(e as Map<String, dynamic>))
@@ -31,7 +31,6 @@ class Deck {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'userId': userId,
       'name': name,
       'deckCards': deckCards.map((card) => card.toJson()).toList(),

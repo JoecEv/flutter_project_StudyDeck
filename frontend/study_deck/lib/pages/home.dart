@@ -1,10 +1,12 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:study_deck/models/deck.dart';
-import 'package:study_deck/pages/study_view.dart';
+import 'package:study_deck/pages/add_deck.dart';
+import 'package:study_deck/provider/deck_provider.dart';
 import 'package:study_deck/provider/theme_provider.dart';
 import 'package:study_deck/theme/app_theme.dart';
 import 'widgets/deck_view_card.dart';
@@ -22,49 +24,49 @@ class _DeckOverviewState extends State<DeckOverview> {
   @override
   void initState() {
     super.initState();
-    getDecks();
+    getAllDecks();
+  }
+
+  void getAllDecks() async {
+    final response = await http.get(
+      Uri.parse('http://${context.read<DeckProvider>().ipAddress}:3000/decks'),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        decks = data.map((json) => Deck.fromJson(json)).toList();
+      });
+    }
   }
 
   void openDeck(Deck deck) {
+    context.read<DeckProvider>().setActiveDeck(deck);
+    context.push('/study_view');
+
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Öffne ${deck.name}')));
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => StudyView(deck: deck)),
-    );
   }
 
-  Future<void> getDecks() async {
-    final response = await http.get(
-      Uri.parse('http://10.229.156.254:3000/decks'),
+  Future<void> deleteDeck(Deck deck) async {
+    final response = await http.delete(
+      Uri.parse(
+        'http://${context.read<DeckProvider>().ipAddress}:3000/decks/${deck.id}',
+      ),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      setState(() {
-        final List<dynamic> data = json.decode(response.body);
-        decks = data.map((json) => Deck.fromJson(json)).toList();
-      });
+      getAllDecks();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${deck.name} wurde gelöscht')));
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Fehler beim Laden der Decks')));
+      ).showSnackBar(SnackBar(content: Text('Fehler beim Löschen vom Deck')));
     }
-  }
-
-  Future<void> deleteDeck(Deck deck) async {
-    await http.delete(
-      Uri.parse('http://10.229.156.254:3000/decks/${deck.id}'),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    getDecks();
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${deck.name} wurde gelöscht')));
   }
 
   @override
@@ -105,21 +107,42 @@ class _DeckOverviewState extends State<DeckOverview> {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.only(top: 16.0, bottom: 80.0),
-        itemCount: decks.length,
-        itemBuilder: (context, index) {
-          final deck = decks[index];
-          return DeckViewCard(
-            title: deck.name,
-            progress: deck.progress,
-            onDelete: () => deleteDeck(deck),
-            onTap: () => openDeck(deck),
-          );
+      body: Consumer<DeckProvider>(
+        builder: (context, deckProvider, child) {
+          return decks.isEmpty
+              ? Center(
+                  child: Text(
+                    "Keine Decks gefunden. Erstelle ein neues!",
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 80.0),
+                  itemCount: decks.length,
+                  itemBuilder: (context, index) {
+                    final deck = decks[index];
+                    return DeckViewCard(
+                      title: deck.name,
+                      progress: deck.progress,
+                      onDelete: () => deleteDeck(deck),
+                      onTap: () => openDeck(deck),
+                    );
+                  },
+                );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/home/add_deck'),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddDeckPage()),
+          );
+          getAllDecks();
+        },
         foregroundColor: Colors.white,
         child: Container(
           width: 60,

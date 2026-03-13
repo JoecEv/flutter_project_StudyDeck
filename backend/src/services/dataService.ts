@@ -34,7 +34,7 @@ export class DataService {
           name TEXT NOT NULL,
           progress NUMBER DEFAULT 0,
           FOREIGN KEY (userId) REFERENCES Users(id)
-        )`);
+          )`);
 
     this._db!.run(`
         CREATE TABLE IF NOT EXISTS Cards (
@@ -98,6 +98,13 @@ export class DataService {
     });
   }
 
+  getUserId(username: string, callback: Function) {
+    this._db!.get('SELECT id FROM Users WHERE name = ?', [username], (err: Error, userId: number) => {
+      if (err) return callback(err, -1);
+      callback(null, userId);
+    });
+  }
+
   getAllDecks(callback: Function): void {
     this._db!.all('SELECT * FROM Decks', (err: Error, decks: Deck[]) => {
       callback(err, decks.sort((a, b) => a.name.localeCompare(b.name)));
@@ -138,16 +145,25 @@ export class DataService {
     );
   }
 
-  addDeck(name: string) {
+  addDeck(name: string, userId: number) {
     this._db!.run(
-      'INSERT INTO Decks (name) VALUES (?)',
-      [name]
+      'INSERT INTO Decks (name, userId) VALUES (?, ?)',
+      [name,
+        userId
+      ]
     );
+  }
+
+  getDeckId(deckName: string, callback: Function) {
+    this._db!.get('SELECT id FROM Decks WHERE name = ?', [deckName], (err: Error, deckId: number) => {
+      if (err) return callback(err, -1);
+      callback(null, deckId);
+    });
   }
 
   addCards(cards: DeckCard[], deckId: number) {
     cards.forEach(card => {
-      this._db!.run('INSERT INTO Decks (front, back) VALUES (?, ?)',
+      this._db!.run('INSERT INTO Cards (deckId, front, back) VALUES (?, ?, ?)',
         [
           deckId,
           card.front,

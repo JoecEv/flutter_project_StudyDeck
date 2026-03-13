@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:study_deck/provider/deck_provider.dart';
 import 'package:study_deck/provider/theme_provider.dart';
 import 'package:study_deck/theme/app_theme.dart';
 
@@ -15,10 +16,22 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+
+  Future<void> getUserId() async {
+    final response = await http.get(
+      Uri.parse(
+        'http://${context.read<DeckProvider>().ipAddress}:3000/user/get-id?username=${usernameController.text.trim()}',
+      ),
+      headers: {'Content-Type': 'application/json'},
+    );
+    final data = jsonDecode(response.body);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('userId', data['id']);
+  }
 
   Future<void> _loginUser() async {
-    final username = _usernameController.text.trim();
+    final username = usernameController.text.trim();
     if (username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Bitte gib einen Spielernamen ein.")),
@@ -28,7 +41,9 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.229.156.254:3000/user/check-username'),
+        Uri.parse(
+          'http://${context.read<DeckProvider>().ipAddress}:3000/user/check-username',
+        ),
         body: jsonEncode({'username': username}),
         headers: {'Content-Type': 'application/json'},
       );
@@ -38,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
       if (data['isExisting'] == false) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('username', username);
+        getUserId();
 
         ScaffoldMessenger.of(
           context,
@@ -124,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
               child: SizedBox(
                 width: 300,
                 child: TextField(
-                  controller: _usernameController,
+                  controller: usernameController,
                   textAlign: TextAlign.start,
                   maxLines: 1,
                   style: TextStyle(
