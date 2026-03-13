@@ -50,9 +50,9 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 20),
+          SizedBox(height: 50),
           Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -68,12 +68,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.only(top: 8, bottom: 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+                        padding: EdgeInsets.fromLTRB(20, 8, 20, 16),
                         child: Text(
                           "Darstellung",
                           style: TextStyle(
@@ -120,26 +120,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: ElevatedButton(
-                    onPressed: () => logout(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                    child: Text(
-                      "Logout",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ),
               ],

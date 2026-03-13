@@ -7,8 +7,10 @@ environment:
   sdk: ^3.10.7
 
 dependencies:
+  audioplayers: ^6.6.0
   flutter:
     sdk: flutter
+  flutter_card_swiper: ^7.2.0
   go_router: ^17.1.0
   http: ^1.6.0
   localstorage: ^6.0.0
@@ -24,6 +26,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/dummy_logo.png
     - assets/studydeck_logo.png
     - assets/studydeck_logo_light.png
+    - assets/right.wav
+    - assets/error.wav

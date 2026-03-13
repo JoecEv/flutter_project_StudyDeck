@@ -3,6 +3,7 @@ import fs from 'fs';
 import { Deck } from '../models/deck';
 import { User } from '../models/user';
 import { DeckCard } from '../models/deckCard';
+import { log } from 'console';
 
 export class DataService {
   private _db: Database | null = null;
@@ -113,15 +114,22 @@ export class DataService {
 
   getDeckById(id: number, callback: Function): void {
     this._db!.all(
-      `SELECT deck.id, deck.name, deck.userId, deck.progress
-              card.id, cards.deckId, card.front, card.back
+      `SELECT deck.id AS deckId, deck.name AS deckName, deck.userId, deck.progress,
+              card.id AS cardId, card.deckId, card.front, card.back
        FROM Decks deck
        LEFT JOIN Cards card ON card.deckId = deck.id
        WHERE deck.id = ?`,
       [id],
-      (rows: any[]) => {
+      (err: Error | null, rows: any[]) => {
+        if (err) {
+          return callback(err, null);
+        }
 
-        const deck: Deck = {
+        if (!rows || rows.length === 0) {
+          return callback(null, null);
+        }
+
+        const deck: any = {
           id: rows[0].deckId,
           userId: rows[0].userId,
           progress: rows[0].progress,

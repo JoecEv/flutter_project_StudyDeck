@@ -21,7 +21,7 @@ class Deck {
       userId: json['userId'],
       name: json['name'],
       deckCards:
-          (json['deckCards'] as List<dynamic>?)
+          (json['cards'] as List<dynamic>?)
               ?.map((e) => DeckCard.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

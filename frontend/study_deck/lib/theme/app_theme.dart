@@ -8,8 +8,8 @@ abstract class AppTheme {
     scaffoldBackgroundColor: Color(0xFFF8F8FF),
     colorScheme: ColorScheme.light(
       primary: Color(0xFF192BC2),
-      secondary: Color(0xFF449DD1),
-      surface: Color(0xFF78C0E0),
+      tertiary: Color.fromARGB(255, 223, 243, 255),
+      secondary: Color(0xFF78C0E0),
     ),
     cardColor: Color(0xFFF5FFFF),
     textTheme: TextTheme(

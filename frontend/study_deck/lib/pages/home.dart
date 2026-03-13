@@ -141,7 +141,6 @@ class _DeckOverviewState extends State<DeckOverview> {
             context,
             MaterialPageRoute(builder: (context) => const AddDeckPage()),
           );
-          getAllDecks();
         },
         foregroundColor: Colors.white,
         child: Container(

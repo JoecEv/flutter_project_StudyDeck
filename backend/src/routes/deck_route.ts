@@ -52,16 +52,16 @@ router.get('/deck/get-id', (req: Request, res: Response) => {
     });
 });
 
-router.get('/decks', (req: Request, res: Response) => {
-    if (!req.params.id) {
+router.get('/deck/get-by-id', (req: Request, res: Response) => {
+    if (!req.query.id) {
         return res.status(404).send({ error: 'Keine Id mitgegeben' });
     }
 
-    dataService.getDeckById(+req.params.id, function (err: Error, deck: Deck) {
+    dataService.getDeckById(+req.query.id, function (err: Error, deck: Deck) {
         if (!deck) {
             return res.status(404).send({ error: 'Es wurde kein Deck gefunden' });
         }
-        return res.send(deck);
+        return res.status(200).send(deck);
     });
 });
 
@@ -98,7 +98,7 @@ router.put('/decks{/:id}', (req: Request, res: Response) => {
         return res.status(404).send({ error: 'Keine Progress mitgegeben' });
     }
 
-    dataService.updateProgress(+req.params.id!, req.body.progess);
+    dataService.updateProgress(+req.params.id!, req.body.progress);
     return res.status(200).send({ message: 'Progress geupdatet' });
 });
 

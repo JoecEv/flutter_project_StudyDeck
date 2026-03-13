@@ -72,7 +72,7 @@ class DeckViewCard extends StatelessWidget {
                 height: 5,
                 margin: EdgeInsets.fromLTRB(20, 0, 20, 16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: Theme.of(context).colorScheme.tertiary,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: FractionallySizedBox(
